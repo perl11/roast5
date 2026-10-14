@@ -3,9 +3,13 @@
 use strict;
 use warnings;
 
-BEGIN { chdir 't'; require q(./test.pl); @INC = qw "../lib lib" }
+BEGIN {
+    chdir 't' if -d 't';
+    require q(./test.pl);
+    set_up_inc('../lib', 'lib');
+}
 
-use utf8;
+use utf8 qw( Mongolian Gujarati Gurmukhi );
 use open qw( :utf8 :std );
 
 plan(tests => 12);
@@ -13,21 +17,21 @@ plan(tests => 12);
 {
 
     {
-        package ᕘ;
+        package ᠠ;
         use strict;
         use warnings;
         use mro 'c3';
         sub new { bless {}, $_[0] }
-        sub ƚ { 'ᕘ::ƚ' }
+        sub ƚ { 'ᠠ::ƚ' }
     }
 
     # call the submethod in the direct instance
 
-    my $foo = ᕘ->new();
-    object_ok($foo, 'ᕘ');
+    my $foo = ᠠ->new();
+    object_ok($foo, 'ᠠ');
 
     can_ok($foo, 'ƚ');
-    is($foo->ƚ(), 'ᕘ::ƚ', '... got the right return value');    
+    is($foo->ƚ(), 'ᠠ::ƚ', '... got the right return value');
 
     # fail calling it from a subclass
 
@@ -36,18 +40,18 @@ plan(tests => 12);
         use strict;
         use warnings;
         use mro 'c3';
-        our @ISA = ('ᕘ');
-    }  
-    
+        our @ISA = ('ᠠ');
+    }
+
     my $bar = Baɾ->new();
     object_ok($bar, 'Baɾ');
-    object_ok($bar, 'ᕘ');    
-    
+    object_ok($bar, 'ᠠ');
+
     # test it working with with Sub::Name
-    SKIP: {    
+    SKIP: {
         eval 'use Sub::Name';
         skip("Sub::Name is required for this test", 3) if $@;
-    
+
         my $m = sub { (shift)->next::method() };
         Sub::Name::subname('Baɾ::ƚ', $m);
         {
@@ -58,22 +62,22 @@ plan(tests => 12);
         can_ok($bar, 'ƚ');
         my $value = eval { $bar->ƚ() };
         ok(!$@, '... calling ƚ() succeeded') || diag $@;
-        is($value, 'ᕘ::ƚ', '... got the right return value too');
+        is($value, 'ᠠ::ƚ', '... got the right return value too');
     }
-    
+
     # test it failing without Sub::Name
     {
         package બʑ;
         use strict;
         use warnings;
         use mro 'c3';
-        our @ISA = ('ᕘ');
-    }      
-    
+        our @ISA = ('ᠠ');
+    }
+
     my $baz = બʑ->new();
     object_ok($baz, 'બʑ');
-    object_ok($baz, 'ᕘ');    
-    
+    object_ok($baz, 'ᠠ');
+
     {
         my $m = sub { (shift)->next::method() };
         {
