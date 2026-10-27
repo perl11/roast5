@@ -234,9 +234,9 @@ sub OtherSouper::method { "Isidore Ropen, Draft Manager" }
    my @ret = $o->SUPER::method('whatever');
    ::is $ret[0], $o, 'object passed to SUPER::method';
    ::is $ret[1], 'whatever', 'argument passed to SUPER::method';
-   @ret = $o->SUPER'method('whatever');
-   ::is $ret[0], $o, "object passed to SUPER'method";
-   ::is $ret[1], 'whatever', "argument passed to SUPER'method";
+   @ret = $o->SUPER::method('whatever');
+   ::is $ret[0], $o, "object passed to SUPER::method";
+   ::is $ret[1], 'whatever', "argument passed to SUPER::method";
    @ret = Saab->SUPER::method;
    ::is $ret[0], 'Saab', "package name passed to SUPER::method";
    @ret = OtherSaab->SUPER::method;
